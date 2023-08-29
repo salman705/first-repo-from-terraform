@@ -1,0 +1,43 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  issues:
+    types:
+      - opened
+      - edited
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Add more steps for job1 here
+
+  ask_for_decision:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Ask for Decision
+        run: echo "Do you want to run the second job?"
+      - name: Check decision and trigger second job if needed
+        run: |
+          if grep -q 'Yes, please run the second job.' $GITHUB_EVENT_PATH; then
+            echo "Trigger the second job here"
+          else
+            echo "Client chose not to trigger the second job."
+          fi
+
+  job2:
+    needs: [job1, ask_for_decision]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Add steps for job2 here
